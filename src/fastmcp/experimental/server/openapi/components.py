@@ -16,6 +16,7 @@ from fastmcp.resources import Resource, ResourceTemplate
 from fastmcp.server.dependencies import get_http_headers
 from fastmcp.tools.tool import Tool, ToolResult
 from fastmcp.utilities.logging import get_logger
+import logging
 
 if TYPE_CHECKING:
     from fastmcp.server import Context
@@ -102,7 +103,11 @@ class OpenAPITool(Tool):
                     for key, value in mcp_headers.items():
                         request.headers[key] = value
             # print logger
-            logger.debug(f"run - sending request; headers: {request.headers}")
+            if logger.level not in [logging.DEBUG]:
+               logger.debug(f"run - sending request; {request.method=} {request.url=} {request.headers=}")
+            else:
+               req = { k: getattr(request, k)  for k in ["method", "url", "headers", "params", "data", "json"] if hasattr(request, k) }
+               logger.debug(f"run - sending request; {req=}")
 
             # Execute the request
             # Note: httpx.AsyncClient.send() doesn't accept timeout parameter

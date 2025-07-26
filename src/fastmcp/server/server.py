@@ -650,6 +650,9 @@ class FastMCP(Generic[LifespanResultT]):
                 raise NotFoundError(f"Unknown tool: {key}")
             except NotFoundError:
                 raise NotFoundError(f"Unknown tool: {key}")
+            except Error as e:
+                raise RuntimeError(f"{e}")
+
 
     async def _call_tool(self, key: str, arguments: dict[str, Any]) -> ToolResult:
         """
